@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package frkr.v1;
+
+option go_package = "github.com/frkr-io/frkr-proto/proto";
+
+// IngestService handles message ingestion from SDKs
+service IngestService {
+  // Ingest receives a mirrored request and stores it
+  rpc Ingest(IngestRequest) returns (IngestResponse);
+}
+
+// IngestRequest contains the mirrored request data
+message IngestRequest {
+  // Stream ID identifies which stream this message belongs to
+  string stream_id = 1;
+  
+  // Mirrored request data (unencrypted, will be encrypted by gateway)
+  MirroredRequest request = 2;
+}
+
+// IngestResponse indicates success or failure
+message IngestResponse {
+  // Success indicates if the message was ingested successfully
+  bool success = 1;
+  
+  // Error message if ingestion failed
+  string error = 2;
+  
+  // Message ID for tracking
+  string message_id = 3;
+}
+
+// MirroredRequest represents a mirrored HTTP request
+message MirroredRequest {
+  // Metadata
+  string stream_id = 1;
+  int64 timestamp_ns = 2;  // Nanosecond timestamp
+  string request_id = 3;   // Unique request ID
+  
+  // Request metadata
+  string method = 4;                    // HTTP method (GET, POST, etc.)
+  string path = 5;                      // Request path
+  map<string, string> headers = 6;       // HTTP headers
+  string service_name = 7;              // Service name (from SDK)
+  string client_ip = 8;                 // Client IP address
+  
+  // Response metadata (if available)
+  int32 status_code = 9;                // HTTP status code
+  int64 latency_ms = 10;                // Request latency in milliseconds
+  map<string, string> response_headers = 11;  // Response headers
+  
+  // Encrypted payload (encrypted by Ingest Gateway)
+  bytes encrypted_symmetric_key = 12;   // Symmetric key encrypted with stream public key
+  bytes encrypted_body = 13;            // Request/response body encrypted with symmetric key
+  bytes iv = 14;                        // Initialization vector for AES-GCM
+  bytes auth_tag = 15;                  // Authentication tag for AES-GCM
+}
+
