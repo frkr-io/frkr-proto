@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Protobuf syntax
+        run: |
+          # Install protoc
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          # Validate proto files
+          for file in proto/*.proto; do
+            protoc --proto_path=proto --descriptor_set_out=/dev/null "$file" || exit 1
+          done
+
