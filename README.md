@@ -1,6 +1,6 @@
 # frkr-proto
 
-Protobuf definitions for the Traffic Mirroring Platform.
+Protobuf definitions for frkr.
 
 ## Purpose
 
