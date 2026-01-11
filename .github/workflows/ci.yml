@@ -17,7 +17,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
           # Validate proto files
-          for file in proto/*.proto; do
+          for file in $(find proto -name "*.proto"); do
             protoc --proto_path=proto --descriptor_set_out=/dev/null "$file" || exit 1
           done
 
