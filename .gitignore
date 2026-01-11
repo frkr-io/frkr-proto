@@ -1,5 +1,5 @@
 # Generated files
-*.pb.go
+
 *.pb.h
 *.pb.cc
 *.pb.h
