@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package frkr.streaming.v1;
+
+option go_package = "github.com/frkr-io/frkr-proto/go/streaming/v1;streamingv1";
+
+import "google/protobuf/timestamp.proto";
+
+// StreamingService handles message streaming to CLI clients
+service StreamingService {
+  // ListStreams returns all streams the user has access to
+  rpc ListStreams(ListStreamsRequest) returns (ListStreamsResponse);
+  
+  // OpenStream opens a stream and sends messages to the client
+  rpc OpenStream(OpenStreamRequest) returns (stream StreamMessage);
+}
+
+// ListStreamsRequest requests a list of accessible streams
+message ListStreamsRequest {
+  // No parameters needed (user identified from auth context)
+}
+
+// ListStreamsResponse contains the list of streams
+message ListStreamsResponse {
+  repeated StreamInfo streams = 1;
+}
+
+// StreamInfo contains metadata about a stream (matches models.Stream)
+message StreamInfo {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+  string description = 4;
+  string status = 5;
+  int32 retention_days = 6;
+  string topic = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  google.protobuf.Timestamp deleted_at = 10;
+}
+
+// OpenStreamRequest requests to open a stream
+message OpenStreamRequest {
+  string stream_id = 1;
+  // TODO: Add start_mode/offset support when implemented in backend
+}
+
+// StreamMessage represents a message streamed to CLI clients (matches messages.StreamMessage)
+message StreamMessage {
+  string method = 1;
+  string path = 2;
+  map<string, string> headers = 3;
+  string body = 4;
+  map<string, string> query = 5;
+  int64 timestamp_ns = 6;
+  string request_id = 7;
+}
