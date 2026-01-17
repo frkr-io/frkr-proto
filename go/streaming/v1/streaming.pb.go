@@ -223,8 +223,12 @@ func (x *StreamInfo) GetDeletedAt() *timestamp.Timestamp {
 
 // OpenStreamRequest requests to open a stream
 type OpenStreamRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StreamId      string                 `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3" json:"stream_id,omitempty"` // TODO: Add start_mode/offset support when implemented in backend
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	StreamId string                 `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3" json:"stream_id,omitempty"`
+	// Start timestamp (inclusive). If 0 or missing, defaults to "now" (live tail).
+	ReplayFrom *timestamp.Timestamp `protobuf:"bytes,2,opt,name=replay_from,json=replayFrom,proto3" json:"replay_from,omitempty"`
+	// End timestamp (exclusive). If 0 or missing, streams indefinitely (live).
+	ReplayTo      *timestamp.Timestamp `protobuf:"bytes,3,opt,name=replay_to,json=replayTo,proto3" json:"replay_to,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -264,6 +268,20 @@ func (x *OpenStreamRequest) GetStreamId() string {
 		return x.StreamId
 	}
 	return ""
+}
+
+func (x *OpenStreamRequest) GetReplayFrom() *timestamp.Timestamp {
+	if x != nil {
+		return x.ReplayFrom
+	}
+	return nil
+}
+
+func (x *OpenStreamRequest) GetReplayTo() *timestamp.Timestamp {
+	if x != nil {
+		return x.ReplayTo
+	}
+	return nil
 }
 
 // StreamMessage represents a message streamed to CLI clients (matches messages.StreamMessage)
@@ -382,9 +400,12 @@ const file_streaming_v1_streaming_proto_rawDesc = "" +
 	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
 	"\n" +
 	"deleted_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\"0\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\"\xa6\x01\n" +
 	"\x11OpenStreamRequest\x12\x1b\n" +
-	"\tstream_id\x18\x01 \x01(\tR\bstreamId\"\x93\x03\n" +
+	"\tstream_id\x18\x01 \x01(\tR\bstreamId\x12;\n" +
+	"\vreplay_from\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"replayFrom\x127\n" +
+	"\treplay_to\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\breplayTo\"\x93\x03\n" +
 	"\rStreamMessage\x12\x16\n" +
 	"\x06method\x18\x01 \x01(\tR\x06method\x12\x12\n" +
 	"\x04path\x18\x02 \x01(\tR\x04path\x12G\n" +
@@ -430,21 +451,23 @@ var file_streaming_v1_streaming_proto_goTypes = []any{
 	(*timestamp.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_streaming_v1_streaming_proto_depIdxs = []int32{
-	2, // 0: frkr.streaming.v1.ListStreamsResponse.streams:type_name -> frkr.streaming.v1.StreamInfo
-	7, // 1: frkr.streaming.v1.StreamInfo.created_at:type_name -> google.protobuf.Timestamp
-	7, // 2: frkr.streaming.v1.StreamInfo.updated_at:type_name -> google.protobuf.Timestamp
-	7, // 3: frkr.streaming.v1.StreamInfo.deleted_at:type_name -> google.protobuf.Timestamp
-	5, // 4: frkr.streaming.v1.StreamMessage.headers:type_name -> frkr.streaming.v1.StreamMessage.HeadersEntry
-	6, // 5: frkr.streaming.v1.StreamMessage.query:type_name -> frkr.streaming.v1.StreamMessage.QueryEntry
-	0, // 6: frkr.streaming.v1.StreamingService.ListStreams:input_type -> frkr.streaming.v1.ListStreamsRequest
-	3, // 7: frkr.streaming.v1.StreamingService.OpenStream:input_type -> frkr.streaming.v1.OpenStreamRequest
-	1, // 8: frkr.streaming.v1.StreamingService.ListStreams:output_type -> frkr.streaming.v1.ListStreamsResponse
-	4, // 9: frkr.streaming.v1.StreamingService.OpenStream:output_type -> frkr.streaming.v1.StreamMessage
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	2,  // 0: frkr.streaming.v1.ListStreamsResponse.streams:type_name -> frkr.streaming.v1.StreamInfo
+	7,  // 1: frkr.streaming.v1.StreamInfo.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 2: frkr.streaming.v1.StreamInfo.updated_at:type_name -> google.protobuf.Timestamp
+	7,  // 3: frkr.streaming.v1.StreamInfo.deleted_at:type_name -> google.protobuf.Timestamp
+	7,  // 4: frkr.streaming.v1.OpenStreamRequest.replay_from:type_name -> google.protobuf.Timestamp
+	7,  // 5: frkr.streaming.v1.OpenStreamRequest.replay_to:type_name -> google.protobuf.Timestamp
+	5,  // 6: frkr.streaming.v1.StreamMessage.headers:type_name -> frkr.streaming.v1.StreamMessage.HeadersEntry
+	6,  // 7: frkr.streaming.v1.StreamMessage.query:type_name -> frkr.streaming.v1.StreamMessage.QueryEntry
+	0,  // 8: frkr.streaming.v1.StreamingService.ListStreams:input_type -> frkr.streaming.v1.ListStreamsRequest
+	3,  // 9: frkr.streaming.v1.StreamingService.OpenStream:input_type -> frkr.streaming.v1.OpenStreamRequest
+	1,  // 10: frkr.streaming.v1.StreamingService.ListStreams:output_type -> frkr.streaming.v1.ListStreamsResponse
+	4,  // 11: frkr.streaming.v1.StreamingService.OpenStream:output_type -> frkr.streaming.v1.StreamMessage
+	10, // [10:12] is the sub-list for method output_type
+	8,  // [8:10] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_streaming_v1_streaming_proto_init() }

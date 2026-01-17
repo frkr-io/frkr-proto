@@ -42,7 +42,12 @@ message StreamInfo {
 // OpenStreamRequest requests to open a stream
 message OpenStreamRequest {
   string stream_id = 1;
-  // TODO: Add start_mode/offset support when implemented in backend
+
+  // Start timestamp (inclusive). If 0 or missing, defaults to "now" (live tail).
+  google.protobuf.Timestamp replay_from = 2;
+
+  // End timestamp (exclusive). If 0 or missing, streams indefinitely (live).
+  google.protobuf.Timestamp replay_to = 3;
 }
 
 // StreamMessage represents a message streamed to CLI clients (matches messages.StreamMessage)

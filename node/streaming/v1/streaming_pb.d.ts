@@ -106,6 +106,16 @@ export class OpenStreamRequest extends jspb.Message {
     getStreamId(): string;
     setStreamId(value: string): OpenStreamRequest;
 
+    hasReplayFrom(): boolean;
+    clearReplayFrom(): void;
+    getReplayFrom(): google_protobuf_timestamp_pb.Timestamp | undefined;
+    setReplayFrom(value?: google_protobuf_timestamp_pb.Timestamp): OpenStreamRequest;
+
+    hasReplayTo(): boolean;
+    clearReplayTo(): void;
+    getReplayTo(): google_protobuf_timestamp_pb.Timestamp | undefined;
+    setReplayTo(value?: google_protobuf_timestamp_pb.Timestamp): OpenStreamRequest;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): OpenStreamRequest.AsObject;
     static toObject(includeInstance: boolean, msg: OpenStreamRequest): OpenStreamRequest.AsObject;
@@ -119,6 +129,8 @@ export class OpenStreamRequest extends jspb.Message {
 export namespace OpenStreamRequest {
     export type AsObject = {
         streamId: string,
+        replayFrom?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        replayTo?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
